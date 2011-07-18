@@ -73,7 +73,7 @@ void init() {
   DDRB &= ~(1<<BUTTON_RED);
 
   // use speaker as a... speaker
-  DDRB |= (1<<SPEAKER); 
+  DDRB |= (1<<SPEAKER);
 
   // enable pull up resistors for buttons
   PORTB |= (1<<BUTTON_WHITE);
@@ -86,7 +86,7 @@ void init() {
   PORTC &= ~(1<<SRCLK);
 
   // nothing to output
-  PORTC &= ~(1<<RCLK);  
+  PORTC &= ~(1<<RCLK);
 
   // LED reset is active low
   PORTC |= (1<<LED_RESET);
@@ -144,19 +144,14 @@ void display_number(unsigned char bits) {
       PORTC &= ~(1<<DATA);
     }
 
-    PORTC |= (1<<SRCLK); 
-    PORTC &= ~(1<<SRCLK); 
-    
+    PORTC |= (1<<SRCLK);
+    PORTC &= ~(1<<SRCLK);
+
   }
   PORTC |= (1<<RCLK);
   PORTC &= ~(1<<RCLK);
 
 }
-
-//void clear_all() {
-//  PORTC &= ~(1<<SRCLR);
-//  PORTC |= (1<<SRCLR);
-//}
 
 void do_white() {
   light_led(white);
@@ -198,12 +193,6 @@ int main() {
 
   init();
 
-//  unsigned char white   = 0b00001000;
-//  unsigned char yellow  = 0b00000100;
-//  unsigned char green   = 0b00000010;
-//  unsigned char red     = 0b00000001;
-//  unsigned char blank   = 0b00000000;
-
   // MSB is segment A
   // LSB unused, represents decimal point
   unsigned char zero  = 0b11111100;
@@ -234,7 +223,7 @@ int main() {
     int tens = (turn / 10) % 10;
     display_number(numbers[tens]);
     display_number(numbers[ones]);
-    
+
     // play current sequence up to current turn
     uint8_t i;
     for(i=0;i<=turn;i++) {
@@ -257,7 +246,7 @@ int main() {
         do_red();
       }
     }
- 
+
     // read inputs, compare with sequence
     uint8_t guess;
     uint8_t any_pressed,white_pressed,yellow_pressed,green_pressed,red_pressed;
@@ -267,10 +256,10 @@ int main() {
       any_pressed = 0;
 
       while(!any_pressed) {
-        white_pressed = !((PINB & (1<<BUTTON_WHITE)) >> BUTTON_WHITE); 
-        yellow_pressed = !((PINB & (1<<BUTTON_YELLOW)) >> BUTTON_YELLOW); 
+        white_pressed = !((PINB & (1<<BUTTON_WHITE)) >> BUTTON_WHITE);
+        yellow_pressed = !((PINB & (1<<BUTTON_YELLOW)) >> BUTTON_YELLOW);
         green_pressed = !((PINB & (1<<BUTTON_GREEN)) >> BUTTON_GREEN);
-        red_pressed = !((PINB & (1<<BUTTON_RED)) >> BUTTON_RED); 
+        red_pressed = !((PINB & (1<<BUTTON_RED)) >> BUTTON_RED);
 
         any_pressed = white_pressed || yellow_pressed || green_pressed || red_pressed;
       }
@@ -292,6 +281,9 @@ int main() {
         do_red();
       }
 
+      // wrong answer, play a fart sound and blink all LEDs
+      // TODO: restart game, maybe add a 'new game' button?
+      // TODO: save high score in NVRAM
       if(sequence[i] != guess) {
         int i;
         int j;
@@ -299,11 +291,11 @@ int main() {
           light_led(all);
           for(j=0;j<5;j++) {
             play_tone(G2,10);
-          }  
+          }
           clear_leds();
           for(j=0;j<5;j++) {
             play_tone(G2,10);
-          }  
+          }
         }
         delay_ms(10000);
       }
